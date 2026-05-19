@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход — Учусь РФ{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h1 class="auth-title">Вход в систему</h1>
+                        <p class="auth-subtitle">Введите данные для доступа к личному кабинету</p>
+                    </div>
+
+                    <form method="post" class="auth-form" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.login.id_for_label }}" class="form-label fw-medium">
+                                {{ form.login.label }}
+                            </label>
+                            <input type="text"
+                                   name="{{ form.login.html_name }}"
+                                   id="{{ form.login.id_for_label }}"
+                                   class="form-control form-control-lg {% if form.login.errors %}is-invalid{% endif %}"
+                                   placeholder="Введите ваш логин"
+                                   value="{{ form.login.value|default:'' }}"
+                                   autocomplete="username"
+                                   autofocus
+                                   required>
+                            {% if form.login.errors %}
+                                <div class="invalid-feedback">{{ form.login.errors|join:', ' }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.password.id_for_label }}" class="form-label fw-medium">
+                                {{ form.password.label }}
+                            </label>
+                            <div class="input-group">
+                                <input type="password"
+                                       name="{{ form.password.html_name }}"
+                                       id="{{ form.password.id_for_label }}"
+                                       class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}"
+                                       placeholder="Введите пароль"
+                                       autocomplete="current-password"
+                                       required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword"
+                                        data-bs-toggle="tooltip" title="Показать / скрыть пароль">
+                                    Показать
+                                </button>
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-danger mt-1" style="font-size: var(--font-sm);">
+                                    {{ form.password.errors|join:', ' }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg btn-submit">
+                            Войти
+                        </button>
+
+                        <div class="admin-hint mt-3">
+                            Администратор: логин <code>Admin26</code>
+                            Администратор: пароль <code>Demo20</code>
+                        </div>
+                    </form>
+
+                    <div class="auth-footer">
+                        <span class="text-muted">Нет аккаунта?</span>
+                        <a href="{% url 'accounts:register' %}" class="auth-link">Зарегистрироваться</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const input = document.getElementById('{{ form.password.id_for_label }}');
+        if (input.type === 'password') {
+            input.type = 'text';
+            this.textContent = 'Скрыть';
+        } else {
+            input.type = 'password';
+            this.textContent = 'Показать';
+        }
+    });
+</script>
+{% endblock %}

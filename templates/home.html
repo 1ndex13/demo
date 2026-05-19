@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Учусь РФ — Онлайн-обучение{% endblock %}
+
+{% block content %}
+
+<!-- Слайдер -->
+<section class="slider-section" aria-label="Баннер">
+    <div class="slider-wrapper" id="mainSlider">
+
+        <!-- Слайд первый  -->
+        <div class="slide slide-active"
+             style="background-image: url('{% static 'images/slide1.svg' %}');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h2 class="slide-title">Учитесь онлайн</h2>
+                <p class="slide-text">
+                    Доступно из любой точки России — в удобное для вас время
+                </p>
+                <a href="{% url 'accounts:register' %}" class="slide-btn">Записаться</a>
+            </div>
+        </div>
+
+        <!-- Слайд второй -->
+        <div class="slide"
+             style="background-image: url('{% static 'images/slide2.svg' %}');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h2 class="slide-title">Повышение квалификации</h2>
+                <p class="slide-text">
+                    Актуализируйте знания и подтвердите профессиональный уровень
+                </p>
+                <a href="{% url 'accounts:register' %}" class="slide-btn">Записаться</a>
+            </div>
+        </div>
+
+        <!-- Слайд третий -->
+        <div class="slide"
+             style="background-image: url('{% static 'images/slide3.svg' %}');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h2 class="slide-title">Переподготовка</h2>
+                <p class="slide-text">
+                    Освойте новую специальность и откройте перспективы карьерного роста
+                </p>
+                <a href="{% url 'accounts:register' %}" class="slide-btn">Записаться</a>
+            </div>
+        </div>
+
+        <!-- Слайд четвертый -->
+        <div class="slide"
+             style="background-image: url('{% static 'images/slide4.svg' %}');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h2 class="slide-title">Набирайте новый опыт</h2>
+                <p class="slide-text">
+                    Освойте новую специальность и откройте перспективы карьерного роста
+                </p>
+                <a href="{% url 'accounts:register' %}" class="slide-btn">Записаться</a>
+            </div>
+        </div>
+
+        <button class="slider-btn slider-prev" aria-label="Предыдущий слайд">&#8592;</button>
+        <button class="slider-btn slider-next" aria-label="Следующий слайд">&#8594;</button>
+
+        <div class="slider-dots" role="tablist">
+            <button class="dot dot-active" role="tab" aria-label="Слайд 1" aria-selected="true"></button>
+            <button class="dot" role="tab" aria-label="Слайд 2" aria-selected="false"></button>
+            <button class="dot" role="tab" aria-label="Слайд 3" aria-selected="false"></button>
+            <button class="dot" role="tab" aria-label="Слайд 4" aria-selected="false"></button>
+        </div>
+    </div>
+</section>
+
+<!-- Карточки курсов -->
+<section class="py-5 bg-light-custom">
+    <div class="container">
+        <h2 class="section-title text-center mb-2">Наши направления</h2>
+        <p class="text-center text-muted mb-5">
+            Выберите подходящий формат обучения
+        </p>
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="course-card h-100">
+                    <h3 class="course-card-title">Повышение квалификации</h3>
+                    <p class="course-card-text">
+                        Курсы для специалистов, желающих углубить знания в своей области
+                        и получить актуальные компетенции.
+                    </p>
+                    <ul class="course-card-list">
+                        <li>От 16 до 250 часов</li>
+                        <li>Удостоверение государственного образца</li>
+                        <li>Дистанционный формат</li>
+                    </ul>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary mt-auto">
+                        Записаться
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="course-card h-100 course-card-featured">
+                    <div class="course-badge">Популярно</div>
+                    <h3 class="course-card-title">Переподготовка</h3>
+                    <p class="course-card-text">
+                        Программы освоения новой профессии или специализации
+                        с присвоением квалификации.
+                    </p>
+                    <ul class="course-card-list">
+                        <li>От 250 часов</li>
+                        <li>Диплом о переподготовке</li>
+                        <li>Практические задания</li>
+                    </ul>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary mt-auto">
+                        Записаться
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="course-card h-100">
+                    <h3 class="course-card-title">Охрана труда</h3>
+                    <p class="course-card-text">
+                        Обязательное обучение руководителей и специалистов
+                        в области охраны труда и пожарной безопасности.
+                    </p>
+                    <ul class="course-card-list">
+                        <li>40 часов (базовый курс)</li>
+                        <li>Удостоверение по ОТ</li>
+                        <li>Соответствует требованиям 218-ФЗ</li>
+                    </ul>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary mt-auto">
+                        Записаться
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

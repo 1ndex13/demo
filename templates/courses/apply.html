@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Подача заявки — Учусь РФ{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h1 class="auth-title">Запись на курс</h1>
+                        <p class="auth-subtitle">Заполните форму — мы свяжемся с вами для подтверждения</p>
+                    </div>
+
+                    <!-- Форма заявки -->
+                    <form method="post" class="auth-form" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Тип курса -->
+                        <div class="mb-3">
+                            <label for="{{ form.course_type.id_for_label }}" class="form-label fw-medium">
+                                {{ form.course_type.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select name="{{ form.course_type.html_name }}"
+                                    id="{{ form.course_type.id_for_label }}"
+                                    class="form-select {% if form.course_type.errors %}is-invalid{% endif %}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    title="Выберите подходящий тип обучения"
+                                    required>
+                                <option value="" disabled {% if not form.course_type.value %}selected{% endif %}>
+                                    — Выберите тип курса —
+                                </option>
+                                {% for val, label in form.course_type.field.choices %}
+                                    {% if val %}
+                                    <option value="{{ val }}"
+                                        {% if form.course_type.value == val %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            {% if form.course_type.errors %}
+                                <div class="invalid-feedback">{{ form.course_type.errors|join:', ' }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Дата начала -->
+                        <div class="mb-3">
+                            <label for="{{ form.date.id_for_label }}" class="form-label fw-medium">
+                                {{ form.date.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   name="{{ form.date.html_name }}"
+                                   id="{{ form.date.id_for_label }}"
+                                   class="form-control {% if form.date.errors %}is-invalid{% endif %}"
+                                   placeholder="ДД.ММ.ГГГГ"
+                                   value="{{ form.date.value|default:'' }}"
+                                   maxlength="10"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-placement="right"
+                                   title="Введите желаемую дату начала обучения в формате ДД.ММ.ГГГГ"
+                                   required>
+                            {% if form.date.errors %}
+                                <div class="invalid-feedback">{{ form.date.errors|join:', ' }}</div>
+                            {% else %}
+                                <div class="form-text">Формат: ДД.ММ.ГГГГ (например, 19.05.2026)</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Способ оплаты -->
+                        <div class="mb-4">
+                            <label for="{{ form.payment_method.id_for_label }}" class="form-label fw-medium">
+                                {{ form.payment_method.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select name="{{ form.payment_method.html_name }}"
+                                    id="{{ form.payment_method.id_for_label }}"
+                                    class="form-select {% if form.payment_method.errors %}is-invalid{% endif %}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    title="Выберите удобный способ оплаты"
+                                    required>
+                                <option value="" disabled {% if not form.payment_method.value %}selected{% endif %}>
+                                    — Выберите способ оплаты —
+                                </option>
+                                {% for val, label in form.payment_method.field.choices %}
+                                    {% if val %}
+                                    <option value="{{ val }}"
+                                        {% if form.payment_method.value == val %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            {% if form.payment_method.errors %}
+                                <div class="invalid-feedback">{{ form.payment_method.errors|join:', ' }}</div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg btn-submit">
+                            Подать заявку
+                        </button>
+
+                        <div class="apply-hint mt-3">
+                            После подачи заявке будет присвоен статус <strong>«Новая»</strong>
+                        </div>
+                    </form>
+
+                    <div class="auth-footer">
+                        <a href="{% url 'courses:cabinet' %}" class="auth-link">Вернуться в кабинет</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const dateInput = document.getElementById('{{ form.date.id_for_label }}');
+
+    // Автоформатирование: вставляем точки при вводе DD.MM.YYYY
+    dateInput.addEventListener('input', function () {
+        let val = this.value.replace(/\D/g, '');
+        if (val.length > 2) val = val.slice(0, 2) + '.' + val.slice(2);
+        if (val.length > 5) val = val.slice(0, 5) + '.' + val.slice(5, 9);
+        this.value = val;
+    });
+
+    // Проверка на прошлую дату перед отправкой формы
+    dateInput.closest('form').addEventListener('submit', function (e) {
+        const raw = dateInput.value.trim();
+        if (raw.length === 10) {
+            const parts = raw.split('.');
+            const entered = new Date(parts[2], parts[1] - 1, parts[0]);
+            const today   = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (entered < today) {
+                e.preventDefault();
+                dateInput.classList.add('is-invalid');
+                let err = dateInput.parentElement.querySelector('.date-error');
+                if (!err) {
+                    err = document.createElement('div');
+                    err.className = 'invalid-feedback date-error';
+                    dateInput.parentElement.appendChild(err);
+                }
+                err.textContent = 'Дата не может быть в прошлом. Выберите сегодня или позже.';
+                const btn = this.querySelector('[type="submit"]');
+                if (btn) { btn.disabled = false; btn.textContent = 'Подать заявку'; }
+            }
+        }
+    });
+
+    dateInput.addEventListener('input', function () {
+        this.classList.remove('is-invalid');
+        const err = this.parentElement.querySelector('.date-error');
+        if (err) err.remove();
+    });
+</script>
+{% endblock %}

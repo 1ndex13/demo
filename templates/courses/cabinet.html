@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет — Учусь РФ{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+
+        <!-- Шапка кабинета -->
+        <div class="cabinet-header">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h1 class="cabinet-name mb-1">{{ user.get_full_name }}</h1>
+                    <p class="text-muted mb-0" style="font-size: var(--font-sm);">
+                        Логин: {{ user.login }}
+                        {% if user.email %} &nbsp;·&nbsp; {{ user.email }}{% endif %}
+                        {% if user.phone %} &nbsp;·&nbsp; {{ user.phone }}{% endif %}
+                    </p>
+                </div>
+                <a href="{% url 'courses:apply' %}" class="btn btn-primary">
+                    Новая заявка
+                </a>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <ul class="nav nav-tabs cabinet-tabs mt-4" id="cabinetTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="apps-tab"
+                        data-bs-toggle="tab" data-bs-target="#applications"
+                        type="button" role="tab" aria-selected="true">
+                    История заявок
+                    <span class="badge bg-primary ms-2">{{ applications.count }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reviews-tab"
+                        data-bs-toggle="tab" data-bs-target="#reviews"
+                        type="button" role="tab" aria-selected="false">
+                    Мои отзывы
+                    <span class="badge bg-secondary ms-2">{{ reviews.count }}</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content cabinet-tab-content" id="cabinetTabContent">
+
+            <!-- Вкладка: История заявок -->
+            <div class="tab-pane fade show active" id="applications" role="tabpanel">
+                {% if applications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover applications-table card-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Тип курса</th>
+                                    <th>Дата начала</th>
+                                    <th>Способ оплаты</th>
+                                    <th>Статус</th>
+                                    <th>Подана</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr class="app-row">
+                                    <td data-label="#">#{{ app.pk }}</td>
+                                    <td data-label="Тип курса">{{ app.get_course_type_display }}</td>
+                                    <td data-label="Дата начала">{{ app.date|date:'d.m.Y' }}</td>
+                                    <td data-label="Способ оплаты">{{ app.get_payment_method_display }}</td>
+                                    <td data-label="Статус">
+                                        <span class="badge bg-{{ app.get_status_badge }} status-badge">
+                                            {{ app.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td data-label="Подана">{{ app.created_at|date:'d.m.Y' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3 class="empty-state-title">Заявок пока нет</h3>
+                        <p class="empty-state-text">Запишитесь на первый курс прямо сейчас</p>
+                        <a href="{% url 'courses:apply' %}" class="btn btn-primary">Подать заявку</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Вкладка: Отзывы -->
+            <div class="tab-pane fade" id="reviews" role="tabpanel">
+
+                {% if completed_without_review %}
+                <div class="review-form-block">
+                    <h3 class="review-form-title">Оставить отзыв</h3>
+                    <form method="post" action="{% url 'courses:add_review' %}">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-medium">Курс</label>
+                                <select name="application_id" class="form-select">
+                                    {% for app in completed_without_review %}
+                                    <option value="{{ app.pk }}">
+                                        #{{ app.pk }} — {{ app.get_course_type_display }} ({{ app.date|date:'d.m.Y' }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <label class="form-label fw-medium">{{ review_form.rating.label }}</label>
+                                {{ review_form.rating }}
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-medium">{{ review_form.text.label }}</label>
+                                {{ review_form.text }}
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if reviews %}
+                    <div class="reviews-list mt-4">
+                        {% for review in reviews %}
+                        <div class="review-card">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                <div class="review-course">
+                                    {% if review.application %}
+                                        {{ review.application.get_course_type_display }}
+                                    {% else %}
+                                        Общий отзыв о платформе
+                                    {% endif %}
+                                </div>
+                                <div class="review-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                    <span class="ms-1 text-muted" style="font-size: var(--font-sm);">
+                                        {{ review.rating }}/5
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="review-text mt-2 mb-1">{{ review.text }}</p>
+                            <p class="review-date text-muted" style="font-size: var(--font-sm);">
+                                {{ review.created_at|date:'d.m.Y' }}
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state mt-4">
+                        <h3 class="empty-state-title">Отзывов пока нет</h3>
+                        <p class="empty-state-text">
+                            {% if completed_without_review %}
+                                Поделитесь впечатлениями о пройденном курсе
+                            {% else %}
+                                Отзывы доступны после завершения обучения
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
