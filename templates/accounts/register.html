@@ -26,17 +26,17 @@
                                    name="{{ form.login.html_name }}"
                                    id="{{ form.login.id_for_label }}"
                                    class="form-control {% if form.login.errors %}is-invalid{% endif %}"
-                                   placeholder="Макс. 6 символов (a–z, A–Z, 0–9)"
+                                   placeholder="Мин. 6 символов (a–z, A–Z, 0–9)"
                                    value="{{ form.login.value|default:'' }}"
-                                   maxlength="6"
+                                   minlength="6"
                                    autocomplete="username"
                                    data-bs-toggle="tooltip"
-                                   title="Только латинские буквы и цифры, не более 6 символов"
+                                   title="Только латинские буквы и цифры, не менее 6 символов"
                                    required>
                             {% if form.login.errors %}
                                 <div class="invalid-feedback">{{ form.login.errors|join:', ' }}</div>
                             {% else %}
-                                <div class="form-text">Только a–z, A–Z, 0–9, максимум 6 символов</div>
+                                <div class="form-text">Только a–z, A–Z, 0–9, минимум 6 символов</div>
                             {% endif %}
                         </div>
 
